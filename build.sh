@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Clean previous build
 rm -rf build
 
@@ -8,7 +7,8 @@ mkdir -p build && cd build
 
 # Configure and build
 make VERBOSE=1
-cmake .. && make -j$(nproc)
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .. && make -j$(nproc)
+
 
 # Run the executable if build succeeds
 if [ $? -eq 0 ]; then
