@@ -9,7 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(client)
 add_subdirectory(server)
 add_subdirectory(robot)
-
+add_subdirectory(pure_pursuit)
+add_subdirectory(simulator)
 
 add_executable(network_control_av main.cpp)
 target_link_libraries(
@@ -18,5 +19,7 @@ target_link_libraries(
     client_lib
     server_lib
     robot_lib
+    simulator_lib
+    pure_pursuit_lib
 
 )
