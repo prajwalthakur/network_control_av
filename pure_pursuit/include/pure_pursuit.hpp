@@ -5,7 +5,7 @@
 #include <sstream>
 #include <Eigen/Dense>
 #include <math.h>
-typedef Eigen::Matrix<double, Eigen::Dynamic, 3 > EigWaypoint;
+typedef Eigen::Matrix<double, Eigen::Dynamic, 2 > EigWaypoint;
 struct coords{
     double x=0;
     double y=0;
@@ -20,6 +20,9 @@ class PurePursuitParam{
         double steering_limit = 25.0;
         double velocity_percentage = 1.0 ;
         int index_speed = 3;
+        int index_yaw = 4;
+        double lf  = 0.3048*3.793293;
+        double lr = 0.3048*4.667707;
 };
 
 
@@ -32,11 +35,13 @@ class PurePursuit: protected PurePursuitParam{
         void _load_waypoints(const std::string&);
         void _constructEigenWaypoints();
         void _insertInEigen(EigWaypoint& ,int , std::vector<double>to_insert);
-        int num_dim =3 ;
+        double _computeLookAheadDist(Eigen::Vector3d&,double,Eigen::VectorXd&);
+        Eigen::MatrixXd _transformWaypoints(const EigWaypoint&, const Eigen::Vector3d&);
+        int num_dim = 2;
         int num_control = 2;
         int num_states = 7;
+        int current_closest_idx = 0;
     public:
-        PurePursuit(const std::string& );
+        PurePursuit(const std::string&,const StateVector& );
         ControlVector computeControl(const StateVector&,const ControlVector&);  
-
 };

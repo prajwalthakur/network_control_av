@@ -177,20 +177,66 @@ InputStruct RobotAbc::_vectorToInput(const ControlVector & ControlVector) const{
     return inpt;
 }
 
+ControlVector RobotAbc::PID(double speed, double steer, double current_speed, double current_steer, double max_sv, double max_a, \
+ double max_v,double min_v)
+ {
+    double sv = 0.0;
+    double accl = 0.0;
 
+    // Steering
+    double steer_diff = steer - current_steer;
+    if (std::fabs(steer_diff) > 1e-4) {
+        sv = (steer_diff / std::fabs(steer_diff)) * max_sv;
+    } else {
+        sv = 0.0;
+    }
+
+    // Velocity difference
+    double vel_diff = speed - current_speed;
+
+    // If currently moving forward
+    if (current_speed > 0.0) {
+        if (vel_diff > 0) {
+            // Accelerating
+            double kp = 10.0 * max_a / max_v;
+            accl = kp * vel_diff;
+        } else {
+            // Braking
+            double kp = 10.0 * max_a / -min_v;
+            accl = kp * vel_diff;
+        }
+    }
+    // If currently moving backward
+    else {
+        if (vel_diff > 0) {
+            // Braking
+            double kp = 2.0 * max_a / max_v;
+            accl = kp * vel_diff;
+        } else {
+            // Accelerating
+            double kp = 2.0 * max_a / -min_v;
+            accl = kp * vel_diff;
+        }
+    }
+    ControlVector ctrl;
+    ctrl.resize(NU);
+    ctrl<<sv,accl;
+    return ctrl;
+}
 
 void RobotAbc::simStep(const ControlVector& u){
     StateVector x_next = this->robot_state;
+    ControlVector ctrl = PID(u(1), u(0),x_next(3), x_next(2), sv_max, a_max, v_max, v_min);
     const int integration_steps = (int)(ctrl_dt/this->fine_time_step_);
     for(int i=0;i<integration_steps;i++){
-        x_next=this->_rk4Integrator(x_next,u,fine_time_step_);
+        x_next=this->_rk4Integrator(x_next,ctrl,fine_time_step_);
         }
     
     StateStruct next_state = _vectorToState(x_next);
      _stateConstraints(next_state);
     x_next = _stateToVector(next_state);
     this->RobotBase::_setState(x_next);
-    this->RobotBase::_setInput(u);
+    this->RobotBase::_setInput(ctrl);
 
 }
 
@@ -218,3 +264,6 @@ void RobotAbc::printControl() const{
             << " acc_x: " << input.acc_x << "\n";
 
 };
+
+
+

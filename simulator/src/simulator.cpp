@@ -6,12 +6,14 @@ Simulator::Simulator(int& width,int& height, string& file_name ):window(sf::Vide
     load_waypoints(file_name);
     window.setFramerateLimit(60);
     view.setSize(window.getSize().x,window.getSize().y);
-    view.setCenter(window.getSize().x/2.f + 100,window.getSize().y/2.f-80);
+    //view.setCenter(window.getSize().x/2.f + 100,window.getSize().y/2.f-80);
+    view.setCenter(window.getSize().x/2.f,window.getSize().y/2.f+100);
+
     window.setView(view);
     //creates an off-screen texture (like a hidden canvas) .
     waypointTexture.create(width,height);
     waypointTexture.clear(sf::Color::Black);
-    scale = 10.0f;
+    scale = 5.0f;
     offset_x = window.getSize().x / 2;
     offset_y = window.getSize().y / 2;
     for(const auto& wp: waypoints){

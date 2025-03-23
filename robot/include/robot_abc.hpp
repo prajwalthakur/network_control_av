@@ -7,25 +7,26 @@ class ABC_PARAM{
         int NU=2;
         double fine_time_step_ = 0.001;
         double mu = 1.0489;
-        double C_Sf = 21.92/1.0489;
-        double C_Sr = 21.92/1.0489;
-        double lf  = 0.3048*3.793293;
-        double lr = 0.3048*4.667707;
-        double h = 0.3048*2.01355;
-        double m = 4.4482216152605/0.3048*74.91452;
-        double Iz = 4.4482216152605*0.3048*1321.416;
+        double C_Sf = 4.718;
+        double C_Sr = 5.4562;
+        double lf  = 0.15875;
+        double lr =  0.17145;
+        double h =  0.074;
+        double m = 3.74;
+        double Iz = 0.04712;
         //steering constraints
-        double s_min = -1.066;  //minimum steering angle [rad]
-        double s_max = 1.066; //maximum steering angle [rad]
-        double sv_min = -0.4; //minimum steering velocity [rad/s]
-        double sv_max = 0.4;  //maximum steering velocity [rad/s]
+        double s_min = -0.4189;  //minimum steering angle [rad]
+        double s_max = 0.4189; //maximum steering angle [rad]
+        double sv_min = -3.2; //minimum steering velocity [rad/s]
+        double sv_max = 3.2;  //maximum steering velocity [rad/s]
         // #longitudinal constraints
-        double v_min = -13.6;  //minimum velocity [m/s]
-        double v_max = 50.8;  //minimum velocity [m/s]
+        double v_min = -5.0;  //minimum velocity [m/s]
+        double v_max = 5.0;  //minimum velocity [m/s]
         double v_switch = 7.319;  //switching velocity [m/s]
-        double a_max = 11.5;  //maximum absolute acceleration [m/s^2]
-        double a_min = 0.0;
+        double a_max = 5.0;  //maximum absolute acceleration [m/s^2]
+        double a_min = -5.0;
         double g =  9.8;
+        // params (dict, default={'mu': 1.0489, 'C_Sf':, 'C_Sr':, 'lf': 0.15875, 'lr': 0.17145, 'h': 0.074, 'm': 3.74, 'I': 0.04712, 's_min': -0.4189, 's_max': 0.4189, 'sv_min': -3.2, 'sv_max': 3.2, 'v_switch':7.319, 'a_max': 9.51, 'v_min':-5.0, 'v_max': 20.0, 'width': 0.31, 'length': 0.58}):
 };
 
 // states of the abc robot
@@ -60,6 +61,8 @@ class RobotAbc: public RobotBase , private ABC_PARAM{
         StateStruct _vectorToState(const StateVector &) const;
         ControlVector _inputToVector(const InputStruct &) const;
         InputStruct _vectorToInput(const ControlVector &) const;
+        ControlVector PID(double , double , double , double , double , double , double ,double );
+
     public:
         RobotAbc();
         void initialize(double) override;
