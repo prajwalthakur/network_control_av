@@ -52,21 +52,21 @@ class RobotAbc: public RobotBase , private ABC_PARAM{
         InputStruct input_struct;
         StateVector _kin_dynamics(const StateStruct&, const InputStruct&);
         StateVector _st_dynamics(const StateStruct&, const InputStruct&);
-        StateVector _dynamics(const StateVector&, const InputVector&);
+        StateVector _dynamics(const StateVector&, const ControlVector&);
         void _controlConstraints(InputStruct&);
         void _stateConstraints(StateStruct&);
-        StateVector _rk4Integrator(const StateVector& , const InputVector& ,double );
+        StateVector _rk4Integrator(const StateVector& , const ControlVector& ,double );
         StateVector _stateToVector(const StateStruct & ) const;
         StateStruct _vectorToState(const StateVector &) const;
-        InputVector _inputToVector(const InputStruct &) const;
-        InputStruct _vectorToInput(const InputVector &) const;
+        ControlVector _inputToVector(const InputStruct &) const;
+        InputStruct _vectorToInput(const ControlVector &) const;
     public:
         RobotAbc();
         void initialize(double) override;
         void initialize(double ctrl_dt, StateVector &st) override;
-        void simStep(const InputVector &) override;
+        void simStep(const ControlVector &) override;
         StateVector getState() const override;
-        InputVector getControl() const override;
+        ControlVector getControl() const override;
         virtual void printState() const override;
         virtual void printControl() const override;
         StateStruct getStateStruct() const ;

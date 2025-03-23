@@ -18,7 +18,7 @@ int main() {
     robot->initialize(ctrl_dt,st); 
     std::cout << "Hello, ddsd!" << std::endl;
     //StateVector st = robot->getState();
-    InputVector vt(2); 
+    ControlVector vt(2); 
     vt << -3.0, 2.0;  
     for(int i=0;i<(int)10/0.01;++i){
         robot->simStep(vt);

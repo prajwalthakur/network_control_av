@@ -86,7 +86,7 @@ StateVector RobotAbc::_st_dynamics(const StateStruct& st, const InputStruct& u){
 
 
 
-StateVector RobotAbc::_dynamics(const StateVector& st, const InputVector& u){
+StateVector RobotAbc::_dynamics(const StateVector& st, const ControlVector& u){
         StateStruct state = _vectorToState(st);
         InputStruct input = _vectorToInput(u);
         _controlConstraints(input);
@@ -106,7 +106,7 @@ StateVector RobotAbc::getState()const {
     return this->robot_state;
 
 }
-InputVector RobotAbc::getControl() const{
+ControlVector RobotAbc::getControl() const{
 
     return this->robot_control;
 }
@@ -126,7 +126,7 @@ InputStruct RobotAbc::getControlStruct() const{
 
 
 
-StateVector RobotAbc::_rk4Integrator(const StateVector& x, const InputVector& u, double ts) {
+StateVector RobotAbc::_rk4Integrator(const StateVector& x, const ControlVector& u, double ts) {
     StateVector k1 = _dynamics(x, u);
     StateVector k2 = _dynamics(x + (ts/2.)*k1,u);
     StateVector k3 = _dynamics(x + (ts/2.)*k2,u);
@@ -148,8 +148,8 @@ StateVector RobotAbc::_stateToVector(const StateStruct & state_struct) const{
     return state_vector;
 }
 
-InputVector RobotAbc::_inputToVector(const InputStruct & input_struct) const{
-    InputVector input_vector;
+ControlVector RobotAbc::_inputToVector(const InputStruct & input_struct) const{
+    ControlVector input_vector;
     input_vector.resize(NU);
     input_vector(0) = input_struct.steer_dot;
     input_vector(1) = input_struct.acc_x;
@@ -170,16 +170,16 @@ StateStruct RobotAbc::_vectorToState(const StateVector & statevector) const{
 }
 
 
-InputStruct RobotAbc::_vectorToInput(const InputVector & inputvector) const{
+InputStruct RobotAbc::_vectorToInput(const ControlVector & ControlVector) const{
     InputStruct inpt;
-    inpt.steer_dot = inputvector(0);
-    inpt.acc_x = inputvector(1);
+    inpt.steer_dot = ControlVector(0);
+    inpt.acc_x = ControlVector(1);
     return inpt;
 }
 
 
 
-void RobotAbc::simStep(const InputVector& u){
+void RobotAbc::simStep(const ControlVector& u){
     StateVector x_next = this->robot_state;
     const int integration_steps = (int)(ctrl_dt/this->fine_time_step_);
     for(int i=0;i<integration_steps;i++){
