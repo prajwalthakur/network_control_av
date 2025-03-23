@@ -193,3 +193,28 @@ void RobotAbc::simStep(const InputVector& u){
     this->RobotBase::_setInput(u);
 
 }
+
+
+void RobotAbc::printState() const{
+
+StateStruct st = getStateStruct();
+
+    std::cout << "StateStruct:\n"
+            << " x: " << st.x << "\n"
+            << " y: " << st.y << "\n"
+            << " front_steer: " << st.front_steer << "\n"
+            << " v_x: " << st.v_x << "\n"
+            << " yaw: " << st.yaw << "\n"
+            << " yaw_dot: " << st.yaw_dot << "\n"
+            << " slip_angle: " << st.slip_angle << "\n";
+
+}
+void RobotAbc::printControl() const{
+
+    InputStruct input = getControlStruct();
+
+    std::cout << "InputStruct:\n"
+            << " steer_dot: " << input.steer_dot << "\n"
+            << " acc_x: " << input.acc_x << "\n";
+
+};

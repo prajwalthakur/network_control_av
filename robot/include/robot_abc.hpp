@@ -63,10 +63,12 @@ class RobotAbc: public RobotBase , private ABC_PARAM{
     public:
         RobotAbc();
         void initialize(double) override;
-        void initialize(double ctrl_dt, StateVector &st);
+        void initialize(double ctrl_dt, StateVector &st) override;
         void simStep(const InputVector &) override;
         StateVector getState() const override;
         InputVector getControl() const override;
+        virtual void printState() const override;
+        virtual void printControl() const override;
         StateStruct getStateStruct() const ;
         InputStruct getControlStruct() const ;
 };
