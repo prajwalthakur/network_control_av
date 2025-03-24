@@ -5,25 +5,33 @@
 #include <mutex>
 #include <boost/asio.hpp>
 #include <Eigen/Dense>
+#include <robot_factory.hpp>
+#include <pure_pursuit.hpp>
 class TCPServer{
     private:
         void acceptConnection();
         int port;
         std::atomic<bool> running;
-        
-
         std::thread server_thread;
         boost::asio::io_service io_service;
         boost::asio::ip::tcp::acceptor acceptor;
         boost::asio::ip::tcp::socket socket;
         std::mutex data_mutex;
-        Eigen::VectorXd StateVector;
-        Eigen::VectorXd ControlVector;
+        StateVector current_robot_state;
+        ControlVector current_control;
+        //std::shared_ptr<RobotBase> robot;
+        //double ctrl_dt;
+         Eigen::VectorXd initial_st;
+         boost::asio::steady_timer control_timer; //  Timer for control loop
+         std::shared_ptr<PurePursuit> Controller ;
+         double control_dt;
+         std::mutex state_control_mutex;
     public: 
-        TCPServer(int);
+        TCPServer(int,std::string&);
         ~TCPServer();
         void start();
         void stop();
         void sendControl(const Eigen::VectorXd&);
+        void controlLoop();
         void readState();
 };

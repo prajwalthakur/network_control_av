@@ -13,7 +13,7 @@ int main() {
     // Create the simulator window
     Simulator simulator(width, height, file_name);
     auto robot = RobotFactory::createRobot("ABC");
-    double ctrl_dt = 0.01;
+    double ctrl_dt = 0.02;
     StateVector st(7);
     st << 15.933784860951967, -4.176775967937121, 0.0, 0.0, -M_PI_2, 0.0, 0.0;
     robot->initialize(ctrl_dt,st); 
@@ -23,7 +23,7 @@ int main() {
     ct << -3.0, 2.0;  
     auto pure_pur = std::make_shared<PurePursuit>(file_name,st);
 
-    for(int i=0;i<(int)100/0.01;++i){
+    for(int i=0;i<(int)100/ctrl_dt;++i){
         robot->simStep(ct);
         StateVector st = robot->getState();
         simulator.run(st[0],st[1]);
@@ -31,7 +31,7 @@ int main() {
         sf::sleep(sf::milliseconds(16)); 
         cout<<"state at "<<i<<" "<<endl;
         robot->printState();
-        cout<<"ctrl: str" << ct(0) << " speed " <<ct(1);
+        cout<<"ctrl: ref-str" << ct(0) << " ref-speed " <<ct(1);
         cout<<"----------";
         cout<<endl;
     }
