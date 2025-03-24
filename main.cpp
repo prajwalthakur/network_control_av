@@ -8,7 +8,7 @@ int main() {
     int height = 600;
 
     // CSV file containing waypoints
-    std::string file_name = "/home/prajwal/projects/network_control_av/Sakhir_centerline.csv";
+    std::string file_name = "/home/prajwal/projects/network_control_av/maps/Sakhir_centerline.csv";
 
     // Create the simulator window
     Simulator simulator(width, height, file_name);

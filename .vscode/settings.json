@@ -126,6 +126,15 @@
     "cinttypes": "cpp",
     "typeindex": "cpp",
     "typeinfo": "cpp",
-    "core": "cpp"
+    "core": "cpp",
+    "*.ipp": "cpp",
+    "*.hppdsds": "cpp",
+    "csignal": "cpp",
+    "any": "cpp",
+    "codecvt": "cpp",
+    "coroutine": "cpp",
+    "source_location": "cpp",
+    "future": "cpp",
+    "variant": "cpp"
   }
 }
