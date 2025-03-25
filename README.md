@@ -41,3 +41,57 @@ Implemented motion model are based on the single track model (bicycle model), mo
 cd build
 ./network_control_av
 ```
+
+## Repository Structure
+```
+.
+├── build.sh
+├── client
+│   ├── CMakeLists.txt
+│   ├── include
+│   │   └── client.hpp
+│   └── src
+│       └── client.cpp
+├── CMakeLists.txt
+├── main.cpp
+├── maps
+│   ├── Austin_centerline.csv
+│   ├── e7_floor5_square.csv
+│   └── Sakhir_centerline.csv
+├── network_control_mr.tar.gz
+├── pure_pursuit
+│   ├── CMakeLists.txt
+│   ├── include
+│   │   └── pure_pursuit.hpp
+│   └── src
+│       └── pure_pursuit.cpp
+├── README.md
+├── repo-tree.txt
+├── robot
+│   ├── CMakeLists.txt
+│   ├── include
+│   │   ├── robot_abc.hpp
+│   │   ├── robot_base.hpp
+│   │   └── robot_factory.hpp
+│   └── src
+│       ├── robot_abc.cpp
+│       └── robot_base.cpp
+├── server
+│   ├── CMakeLists.txt
+│   ├── include
+│   │   └── server.hpp
+│   └── src
+│       └── server.cpp
+├── simulator
+│   ├── CMakeLists.txt
+│   ├── fonts
+│   │   └── Arial_Bold.ttf
+│   ├── include
+│   │   └── simulator.hpp
+│   └── src
+│       └── simulator.cpp
+└── video
+    └── square_track.mp4
+
+18 directories, 29 files
+```
