@@ -20,9 +20,9 @@ int main() {
     StateVector st(7);
     ControlVector ct(2); 
     //st << 15.933784860951967, -4.176775967937121, 0.0, 0.0, -M_PI_2, 0.0, 0.0;
-    st << -0.1769055,-7.8900953, 0.0, 0.0, M_PI_2, 0.0, 0.0;
+    st << -0.0111923,-1.6500606, 0.0, 0.0, M_PI_2, 0.0, 0.0;
     ct << 0.0,0.0;  // steering angle reference and speed reference
-    TCPServer server(8080, file_name,st);
+    TCPServer server(8080, file_name,st, ct);
     RobotClient client("127.0.0.1",8080,"ABC", st, ct) ;
     
     std::thread server_thread([&server, &client]() {

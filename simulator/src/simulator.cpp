@@ -31,6 +31,7 @@ Simulator::Simulator(int& width,int& height, string& file_name ):window(sf::Vide
         // The circle's top-left corner will be placed at (wp.x, wp.y) offset need to make center at wp.x and wp.y
         waypoint.setPosition(wp.x * scale + offset_x -5.0f, wp.y * scale + offset_y-5.0f);   
         waypointTexture.draw(waypoint);
+
     }
     
     //sprite in SFML is  a drawable object that holds a texture
@@ -135,7 +136,7 @@ void Simulator::run(const double& car_x,const double& car_y, const double& yaw)
         // Set the fill color
         car.setFillColor(sf::Color::Red);
         window.draw(car);
-
+        window.draw(Speed_steering_text);
         // Display frame
         window.display();    
     

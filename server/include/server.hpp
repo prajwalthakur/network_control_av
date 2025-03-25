@@ -28,7 +28,7 @@ class TCPServer{
          std::mutex state_control_mutex;
          //void handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> );
     public: 
-        TCPServer(int,std::string&,StateVector&);
+        TCPServer(int,std::string&,StateVector&,ControlVector&);
         ~TCPServer();
         void start();
         void stop();

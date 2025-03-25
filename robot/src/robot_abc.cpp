@@ -1,6 +1,6 @@
 #include "robot_abc.hpp"
 
-
+//helper function to bound the states and control
 static auto clip_fxn(auto val, auto min_val, auto max_val){
     if(val<min_val){return min_val;}
     else if(val>=min_val && val<=max_val){return val;}
@@ -9,15 +9,11 @@ static auto clip_fxn(auto val, auto min_val, auto max_val){
     }
 }
 
-
-
-
-
+// class constructor
 RobotAbc::RobotAbc(){
     this->robot_state.resize(NX);
     this->robot_control.resize(NU);
 }
-
 
 void RobotAbc::initialize(double ctrl_dt){
 
@@ -34,12 +30,13 @@ void RobotAbc::initialize(double ctrl_dt, StateVector& st){
 
 }
 
-
+// function to bound the control
 void RobotAbc::_controlConstraints(InputStruct& input){
 
     input.acc_x = clip_fxn(input.acc_x, a_min, a_max );
     input.steer_dot = clip_fxn(input.steer_dot, sv_min, sv_max );
 }
+//function to bound the states 
 void RobotAbc::_stateConstraints(StateStruct& st){
 
     st.yaw = atan2(sin(st.yaw),cos(st.yaw));  // -pi to pi range
@@ -48,7 +45,9 @@ void RobotAbc::_stateConstraints(StateStruct& st){
     st.front_steer = clip_fxn(st.front_steer,s_min,s_max);
 }
 
-
+// kinematic based dynamics for very low sppeed (currently for less than 0.3 m/sec)
+// ref: https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/-/blob/master/vehicleModels_commonRoad.pdf
+//ref: https://github.com/f1tenth/f1tenth_gym
 StateVector RobotAbc::_kin_dynamics(const StateStruct& st, const InputStruct& u){
 
     auto lwb = lf+lr;
@@ -64,6 +63,10 @@ StateVector RobotAbc::_kin_dynamics(const StateStruct& st, const InputStruct& u)
     return stv;
 }
 
+
+// single track dynamics of a robot, which considers the forces, frictions
+// ref: https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/-/blob/master/vehicleModels_commonRoad.pdf
+//ref: https://github.com/f1tenth/f1tenth_gym
 StateVector RobotAbc::_st_dynamics(const StateStruct& st, const InputStruct& u){
     auto lwb = lf + lr;
     auto x_dot = st.v_x*std::cos(st.yaw+st.slip_angle);
@@ -85,13 +88,13 @@ StateVector RobotAbc::_st_dynamics(const StateStruct& st, const InputStruct& u){
 }
 
 
-
+//accepts the steering speed and acceleration and calls the dynamics update
 StateVector RobotAbc::_dynamics(const StateVector& st, const ControlVector& u){
         StateStruct state = _vectorToState(st);
         InputStruct input = _vectorToInput(u);
         _controlConstraints(input);
         StateVector stv;
-        if((double)abs(state.v_x)<0.5){
+        if((double)abs(state.v_x)<0.3){
             stv = _kin_dynamics(state, input);
         }
         else{
@@ -101,82 +104,9 @@ StateVector RobotAbc::_dynamics(const StateVector& st, const ControlVector& u){
         return stv;
 }
 
-StateVector RobotAbc::getState()const {
 
-    return this->robot_state;
-
-}
-ControlVector RobotAbc::getControl() const{
-
-    return this->robot_control;
-}
-
-StateStruct RobotAbc::getStateStruct()const {
-
-    return _vectorToState(this->robot_state);
-
-}
-
-
-InputStruct RobotAbc::getControlStruct() const{
-
-    return _vectorToInput(this->robot_control);
-}
-
-
-
-
-StateVector RobotAbc::_rk4Integrator(const StateVector& x, const ControlVector& u, double ts) {
-    StateVector k1 = _dynamics(x, u);
-    StateVector k2 = _dynamics(x + (ts/2.)*k1,u);
-    StateVector k3 = _dynamics(x + (ts/2.)*k2,u);
-    StateVector k4 = _dynamics(x + (ts/2.)*k3,u);
-    StateVector x_next = x + ts*(k1/6.+k2/3.+k3/3.+k4/6.);
-    return x_next;
-}
-
-StateVector RobotAbc::_stateToVector(const StateStruct & state_struct) const{
-    StateVector state_vector;
-    state_vector.resize(NX);
-    state_vector(0) = state_struct.x;
-    state_vector(1) = state_struct.y;
-    state_vector(2) = state_struct.front_steer;
-    state_vector(3) = state_struct.v_x;
-    state_vector(4) = state_struct.yaw;
-    state_vector(5) = state_struct.yaw_dot;
-    state_vector(6) = state_struct.slip_angle;
-    return state_vector;
-}
-
-ControlVector RobotAbc::_inputToVector(const InputStruct & input_struct) const{
-    ControlVector input_vector;
-    input_vector.resize(NU);
-    input_vector(0) = input_struct.steer_dot;
-    input_vector(1) = input_struct.acc_x;
-    return input_vector;
-
-}
-
-StateStruct RobotAbc::_vectorToState(const StateVector & statevector) const{
-    StateStruct st;
-    st.x = statevector(0);
-    st.y = statevector(1);
-    st.front_steer = statevector(2);
-    st.v_x = statevector(3);
-    st.yaw = statevector(4);
-    st.yaw_dot = statevector(5);
-    st.slip_angle = statevector(6);
-    return st;
-}
-
-
-InputStruct RobotAbc::_vectorToInput(const ControlVector & ControlVector) const{
-    InputStruct inpt;
-    inpt.steer_dot = ControlVector(0);
-    inpt.acc_x = ControlVector(1);
-    return inpt;
-}
-
+// PID for converting speed and steering angle reference to the acceleration and steering angle speed
+//ref : https://github.com/f1tenth/f1tenth_gym
 ControlVector RobotAbc::PID(double speed, double steer, double current_speed, double current_steer, double max_sv, double max_a, \
  double max_v,double min_v)
  {
@@ -224,6 +154,9 @@ ControlVector RobotAbc::PID(double speed, double steer, double current_speed, do
     return ctrl;
 }
 
+// accepts ControlVector (spped and steering reference) and call the internal PID controller to convert the reference to speed and steering reference
+// integration through RK4, to get the next state of the car
+// fine_time_step is for finer integration step , currently ctrl_dt =  fine_time_step  0.001
 void RobotAbc::simStep(const ControlVector& u){
     StateVector x_next = this->robot_state;
     ControlVector ctrl = PID(u(1), u(0),x_next(3), x_next(2), sv_max, a_max, v_max, v_min);
@@ -237,11 +170,60 @@ void RobotAbc::simStep(const ControlVector& u){
     x_next = _stateToVector(next_state);
     this->RobotBase::_setState(x_next);
     this->RobotBase::_setInput(ctrl);
-    //printState();
+    std::cout<<"True states of the Robot"<<std::endl;
+    printState();
+
+}
+
+// helper function to convert the state struct to the state-Eigen vector
+StateVector RobotAbc::_stateToVector(const StateStruct & state_struct) const{
+    StateVector state_vector;
+    state_vector.resize(NX);
+    state_vector(0) = state_struct.x;
+    state_vector(1) = state_struct.y;
+    state_vector(2) = state_struct.front_steer;
+    state_vector(3) = state_struct.v_x;
+    state_vector(4) = state_struct.yaw;
+    state_vector(5) = state_struct.yaw_dot;
+    state_vector(6) = state_struct.slip_angle;
+    return state_vector;
+}
+
+
+// helper function to convert the state-Eigen-vector to the state-struct
+StateStruct RobotAbc::_vectorToState(const StateVector & statevector) const{
+    StateStruct st;
+    st.x = statevector(0);
+    st.y = statevector(1);
+    st.front_steer = statevector(2);
+    st.v_x = statevector(3);
+    st.yaw = statevector(4);
+    st.yaw_dot = statevector(5);
+    st.slip_angle = statevector(6);
+    return st;
+}
+
+
+// helper function to convert the Input struct to the Input-Eigen vector
+ControlVector RobotAbc::_inputToVector(const InputStruct & input_struct) const{
+    ControlVector input_vector;
+    input_vector.resize(NU);
+    input_vector(0) = input_struct.steer_dot;
+    input_vector(1) = input_struct.acc_x;
+    return input_vector;
 
 }
 
 
+// helper function to convert the Control-Eigen-vector to the control-struct
+InputStruct RobotAbc::_vectorToInput(const ControlVector & ControlVector) const{
+    InputStruct inpt;
+    inpt.steer_dot = ControlVector(0);
+    inpt.acc_x = ControlVector(1);
+    return inpt;
+}
+
+// helper to print the states
 void RobotAbc::printState() const{
 
 StateStruct st = getStateStruct();
@@ -256,6 +238,7 @@ StateStruct st = getStateStruct();
             << " slip_angle: " << st.slip_angle << "\n";
 
 }
+// helper to print dynamics-control (acc,steering dot)
 void RobotAbc::printControl() const{
 
     InputStruct input = getControlStruct();
@@ -266,5 +249,37 @@ void RobotAbc::printControl() const{
 
 };
 
+// rk4 integrator
+StateVector RobotAbc::_rk4Integrator(const StateVector& x, const ControlVector& u, double ts) {
+    StateVector k1 = _dynamics(x, u);
+    StateVector k2 = _dynamics(x + (ts/2.)*k1,u);
+    StateVector k3 = _dynamics(x + (ts/2.)*k2,u);
+    StateVector k4 = _dynamics(x + (ts/2.)*k3,u);
+    StateVector x_next = x + ts*(k1/6.+k2/3.+k3/3.+k4/6.);
+    return x_next;
+}
 
+
+// getters for state, control state-struct, control-struct
+StateVector RobotAbc::getState()const {
+
+    return this->robot_state;
+
+}
+ControlVector RobotAbc::getControl() const{
+
+    return this->robot_control;
+}
+
+StateStruct RobotAbc::getStateStruct()const {
+
+    return _vectorToState(this->robot_state);
+
+}
+
+
+InputStruct RobotAbc::getControlStruct() const{
+
+    return _vectorToInput(this->robot_control);
+}
 

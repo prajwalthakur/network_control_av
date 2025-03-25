@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 typedef Eigen::VectorXd StateVector;
 typedef Eigen::VectorXd ControlVector;
+// base class for Robot
 class RobotBase
     {
         protected:
@@ -23,8 +24,6 @@ class RobotBase
             virtual ControlVector getControl()const =0;
             virtual void printState() const =   0;
             virtual void printControl() const = 0;
-            // virtual StateType getStateStruct() const = 0;
-            // virtual InputType getControlStruct() const = 0;
     };
 
 

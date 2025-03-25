@@ -32,7 +32,7 @@ class PurePursuitParam{
 
 class PurePursuit: protected PurePursuitParam{
     private:
-        StateVector st;
+        StateVector current_state;
         ControlVector control;
         std::vector<coords> waypoints;
         EigWaypoint eig_waypoints;
@@ -47,6 +47,6 @@ class PurePursuit: protected PurePursuitParam{
         int current_closest_idx = 0;
         double ref_speed = 1.0;
     public:
-        PurePursuit(const std::string&,const StateVector& );
+        PurePursuit(const std::string&,const StateVector&, const ControlVector&  );
         ControlVector computeControl(const StateVector&,const ControlVector&);  
 };

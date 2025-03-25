@@ -19,6 +19,8 @@ class Simulator {
         sf::View view;
         double zoom_factor = 1.0f;
         sf::Vector2f lastMousePos;
+        sf::Text Speed_steering_text;
+        sf::Font font;
         bool isDragging = false;
 
     public:

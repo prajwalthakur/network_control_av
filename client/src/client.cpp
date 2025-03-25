@@ -58,7 +58,7 @@ void RobotClient::sendState(){
     current_robot_state = robot->getState();  
     auto buffer = std::make_shared<std::vector<double>>(eigenToBuffer(current_robot_state));
     boost::asio::async_write(socket,boost::asio::buffer(*buffer),[this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred){
-        if(!error){std::cout<< " Send state to server "<<current_robot_state(0)<<" "<<current_robot_state(1)<<std::endl;}
+        if(!error){std::cout<< " Send state to server "<<current_robot_state.transpose()<<std::endl;}
         else{std::cerr<<" Error while sending message"<< error.message()<<std::endl;} // std::cerr ensures that error messages are displayed right away not buffered like std::cout
     });
     state_timer.expires_from_now(std::chrono::milliseconds(static_cast<int>(state_feedback_dt * 1000)));

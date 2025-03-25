@@ -1,17 +1,16 @@
 #include "pure_pursuit.hpp"
 
-PurePursuit::PurePursuit(const std::string& file_name, const StateVector& init_state){
-    st.resize(num_states);
-    control.resize(num_control);
+PurePursuit::PurePursuit(const std::string& file_name, const StateVector& init_state,const ControlVector& prev_control):
+    current_state(init_state),
+    control(prev_control){
     _load_waypoints(file_name);
     Eigen::Vector3d curr_pose;
-    curr_pose<<init_state(0),init_state(1),init_state(index_yaw);
+    curr_pose <<current_state(0),current_state(1),current_state(index_yaw);
     Eigen::MatrixXd transformed_wp = _transformWaypoints(eig_waypoints, curr_pose);
     int num_rows = transformed_wp.rows();
-    // find the indices from the previous closest indices to the next 100 
+    // following code finds the initial closest index to the initial position of the car
     int curr_idx = this->current_closest_idx;
     Eigen::VectorXi indices = Eigen::VectorXi::LinSpaced(num_rows, 0,num_rows-1);
-    // find the euclid dist from the 
     Eigen::VectorXd distances = transformed_wp(indices, Eigen::all).rowwise().norm();
     Eigen::Index min_index;
     double min_distance = distances.minCoeff(&min_index);

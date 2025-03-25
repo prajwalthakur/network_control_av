@@ -1,6 +1,9 @@
 #pragma once
 #include "robot_base.hpp"
 
+
+// parameter for ABC ROBOT
+// parameters ref : https://github.com/f1tenth/f1tenth_gym
 class ABC_PARAM{
     protected:
         int NX=7;  

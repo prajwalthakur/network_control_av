@@ -4,21 +4,33 @@ This project is about network-controlled autonomous mobile robot. The system con
 
 ```mermaid
 flowchart TB
-    TCPServer["**Server**"]
+    TCPServer["**TCP Server**"]
     RobotClient["**Robot Client**"]
     MotionPlanner["Motion Planner"]
     RobotDynamics["Robot Dynamics"]
     
+    MotionPlanner <--> TCPServer
     TCPServer <--> RobotClient
-    MotionPlanner --> TCPServer
-    RobotClient --> RobotDynamics 
+    RobotClient <--> RobotDynamics 
     
 ```
 
 https://github.com/user-attachments/assets/31855e9c-6aaa-4744-acb6-ca8be0d7e39e
 
 
+## Motion Model reference
+1. https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/-/blob/master/vehicleModels_commonRoad.pdf
+2. https://github.com/f1tenth/f1tenth_gym
+
+Implemented motion model are based on the single track model (bicycle model), model which considers the forces,friction, slips
+
+#### Limitation
+1. No roll/pitch dynamics:  Ignores body roll and pitch
+2. Same slip angle per axle: Both wheels on the same axle are assumed to have same slip angle
+3. Lumped Parameters: Mass, tire cornering stiffness, and other parameters for each axle are combined into single, equivalent values.
+
+
 ## External Dependency
-    1. Eigen3 (for Mathematical operations)
-    2. Sfml (for visualization)
+1. Eigen3 (for Mathematical operations)
+2. Sfml (for visualization)
 

@@ -14,15 +14,16 @@ static Eigen::VectorXd bufferToEigen(const std::vector<double>& buffer,std::size
 
 
 //Opens a listening socket  the port.
-TCPServer::TCPServer(int port,std::string& file_name,StateVector& init_state):
+TCPServer::TCPServer(int port,std::string& file_name, StateVector& init_state, ControlVector& init_control):
                 port(port),
                 acceptor(io_service,boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),port)),
                 socket(io_service), 
                 control_timer(io_service),
-                current_robot_state(init_state){
+                current_robot_state(init_state),
+                current_control(init_control){
 
             control_dt = 0.05; // 1/(rate at which we need to call the pure pursuit)
-            Controller = std::make_shared<PurePursuit>(file_name,current_robot_state);
+            Controller = std::make_shared<PurePursuit>(file_name,current_robot_state,current_control);
             std::cout<<" server initialized"<<std::endl; 
 
         }
@@ -104,7 +105,7 @@ void TCPServer::readState(){
             if(!error){
                 //std::lock_guard<std::mutex> lock(state_control_mutex);
                 current_robot_state = bufferToEigen(*buffer, bytes_transferred/sizeof(double));
-                std::cout << "Received state vector:\n" << current_robot_state.transpose() << std::endl;
+                std::cout << "Received state vector in Server:\n" << current_robot_state.transpose() << std::endl;
                 readState();
             } else {
                 std::cerr << "Read error: " << error.message() << std::endl;
