@@ -14,10 +14,10 @@ struct coords{
 
 class PurePursuitParam{
     protected:
-        double min_lookahead =  0.5;
-        double max_lookahead = 3.0; 
+        double min_lookahead =  0.9;
+        double max_lookahead = 2.0; 
         double lookahead_ratio =  8.0; 
-        double K_p = 0.5;
+        double K_p = 0.4;
         double steering_limit = 25.0;
         double velocity_percentage = 1.0 ;
         int index_speed = 3;

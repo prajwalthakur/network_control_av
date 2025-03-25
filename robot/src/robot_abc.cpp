@@ -237,7 +237,7 @@ void RobotAbc::simStep(const ControlVector& u){
     x_next = _stateToVector(next_state);
     this->RobotBase::_setState(x_next);
     this->RobotBase::_setInput(ctrl);
-    printState();
+    //printState();
 
 }
 

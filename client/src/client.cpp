@@ -24,13 +24,14 @@ RobotClient::RobotClient(const std::string& host,int port,const std::string& rob
 
                 robot = RobotFactory::createRobot(robot_name);
                 state_feedback_dt = 0.02;
-                dynamics_update_dt = 0.001;
+                dynamics_update_dt = 0.05;
                 robot->initialize(dynamics_update_dt,init_state);
-
+                current_robot_state.resize(7);
+                current_robot_state = robot->getState();
                 boost::asio::ip::tcp::endpoint end_point(boost::asio::ip::address::from_string(host),port); // connect to ip address defined by host on port 
                 socket.connect(end_point);
                 std::cout << "Connected to server at "<< host << ":" << port <<std::endl;
-                start();
+               
         
             }
 
@@ -66,8 +67,8 @@ void RobotClient::sendState(){
     
     auto buffer = std::make_shared<std::vector<double>>(eigenToBuffer(current_robot_state));
     boost::asio::async_write(socket,boost::asio::buffer(*buffer),[this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred){
-        if(!error){std::cout<< " Send state to server"<<std::endl;}
-        else{std::cerr<<" state send error"<< error.message()<<std::endl;}
+        if(!error){std::cout<< " Send state to server "<<current_robot_state(0)<<" "<<current_robot_state(1)<<std::endl;}
+        else{std::cerr<<" state send errorrrrrrr"<< error.message()<<std::endl;}
     });
     state_timer.expires_from_now(std::chrono::milliseconds(static_cast<int>(state_feedback_dt * 1000)));
     state_timer.async_wait([this](const boost::system::error_code& error){
@@ -109,10 +110,22 @@ void RobotClient::recieveControl(){
 
 void RobotClient::stop() {
     running = false;
-    socket.close();
+
+    if (socket.is_open()) {
+        std::cout << "Closing client socket." << std::endl;
+        socket.close();
+    }
+
+    //socket.close();
     io_service.stop();
 
     if (client_thread.joinable()) {
         client_thread.join();
     }
+}
+
+
+StateVector RobotClient::getState(){
+    std::lock_guard<std::mutex> lock(state_mutex);
+    return current_robot_state;
 }

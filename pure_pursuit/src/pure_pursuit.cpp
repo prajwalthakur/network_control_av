@@ -32,7 +32,7 @@ void PurePursuit::_load_waypoints(const std::string& file_name)
         
         std::stringstream ss(line);
         std::string token;
-        std::vector<float> v;
+        std::vector<double> v;
         while (std::getline(ss, token, ',')) {
                v.push_back(stof(token));
         }
@@ -70,6 +70,8 @@ void PurePursuit::_constructEigenWaypoints(){
     }
 }
 
+
+// transform the waypoints to the vehicle's coordinates
 Eigen::MatrixXd PurePursuit::_transformWaypoints(const EigWaypoint& waypoints, const Eigen::Vector3d& current_pose)
     {
     // Eigen::MatrixXd shifted = waypoints - current_pose(Eigen::seqN(0, 2)).transpose();
@@ -120,8 +122,7 @@ ControlVector PurePursuit::computeControl(const StateVector& st, const ControlVe
     Eigen::VectorXd look_ahead_point;
     double look_ahead_dist = _computeLookAheadDist( current_position, lookahead, look_ahead_point);
     double alpha = atan2(look_ahead_point(1),look_ahead_point(0));
-    ctrl(0) =  atan(2*(lf+lr)*sin(alpha)/(look_ahead_dist));
-    ctrl(1) = 1.1;
-    //std::cout<< " control computed at  time okk"<<std::endl;
+    ctrl(0) =  K_p*atan(2*(lf+lr)*sin(alpha)/(look_ahead_dist));
+    ctrl(1) = 0.9;
     return  ctrl;
 }

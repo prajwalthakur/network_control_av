@@ -36,5 +36,6 @@ class RobotClient {
         ~RobotClient();
         void start();
         void stop();
+        StateVector getState();
 
 };

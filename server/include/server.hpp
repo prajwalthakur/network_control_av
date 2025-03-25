@@ -26,12 +26,14 @@ class TCPServer{
          std::shared_ptr<PurePursuit> Controller ;
          double control_dt;
          std::mutex state_control_mutex;
+         //void handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> );
     public: 
-        TCPServer(int,std::string&);
+        TCPServer(int,std::string&,StateVector&);
         ~TCPServer();
         void start();
         void stop();
         void sendControl(const Eigen::VectorXd&);
         void controlLoop();
         void readState();
+        StateVector getState();
 };
