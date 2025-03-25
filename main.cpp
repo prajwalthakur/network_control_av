@@ -19,7 +19,7 @@ int main() {
     //initial position and control-reference of the car on the track
     StateVector st(7);
     ControlVector ct(2); 
-    //st << 15.933784860951967, -4.176775967937121, 0.0, 0.0, -M_PI_2, 0.0, 0.0;
+    // if changing initial position, make sure to change the initial yaw as well
     st << -0.1769055,-7.8900953, 0.0, 0.0, M_PI_2, 0.0, 0.0;
     ct << 0.0,0.0;  // steering angle reference and speed reference
     TCPServer server(8080, file_name,st, ct);

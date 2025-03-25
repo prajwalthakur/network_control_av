@@ -34,3 +34,8 @@ Implemented motion model are based on the single track model (bicycle model), mo
 1. Eigen3 (for Mathematical operations)
 2. Sfml (for visualization)
 
+
+## Steps to execute
+```
+./build.sh
+```
