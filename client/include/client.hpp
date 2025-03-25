@@ -10,7 +10,6 @@
 class RobotClient {
 
     private:
-        //void connect();
         void sendState();
         void recieveControl();
         void executeControl();
@@ -25,10 +24,8 @@ class RobotClient {
         std::mutex state_mutex;
         std::shared_ptr<RobotBase> robot;
         std::string robot_name;
-        StateVector init_state;
-        double state_feedback_dt;
-        double dynamics_update_dt;
-        Simulator* sim;
+        double state_feedback_dt; // 1/(rate to send the dyanmics update)
+        double dynamics_update_dt; //1/(rate to run the dyanmics update)
 
 
     public:

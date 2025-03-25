@@ -7,11 +7,14 @@
 #include <Eigen/Dense>
 #include <math.h>
 typedef Eigen::Matrix<double, Eigen::Dynamic, 2 > EigWaypoint;
+
+
 struct coords{
     double x=0;
     double y=0;
 };
 
+// pure pursuit parameters
 class PurePursuitParam{
     protected:
         double min_lookahead =  0.9;
@@ -42,6 +45,7 @@ class PurePursuit: protected PurePursuitParam{
         int num_control = 2;
         int num_states = 7;
         int current_closest_idx = 0;
+        double ref_speed = 1.0;
     public:
         PurePursuit(const std::string&,const StateVector& );
         ControlVector computeControl(const StateVector&,const ControlVector&);  

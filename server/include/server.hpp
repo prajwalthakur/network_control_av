@@ -24,7 +24,7 @@ class TCPServer{
          Eigen::VectorXd initial_st;
          boost::asio::steady_timer control_timer; //  Timer for control loop
          std::shared_ptr<PurePursuit> Controller ;
-         double control_dt;
+         double control_dt; // 1/(rate to call pure pursuit)
          std::mutex state_control_mutex;
          //void handleClient(std::shared_ptr<boost::asio::ip::tcp::socket> );
     public: 

@@ -18,6 +18,7 @@ PurePursuit::PurePursuit(const std::string& file_name, const StateVector& init_s
     this->current_closest_idx = indices(min_index);
 }
 
+// load waypoints from file_name.csv
 void PurePursuit::_load_waypoints(const std::string& file_name)
 {
     std::ifstream file(file_name);
@@ -43,7 +44,7 @@ void PurePursuit::_load_waypoints(const std::string& file_name)
     _constructEigenWaypoints();
 }
 
-
+// helper function to insert in a row of Eigne Matrix 
 void PurePursuit::_insertInEigen(EigWaypoint& eig_vector,int index, std::vector<double>to_insert)
 {
     int num_cols = eig_vector.cols();
@@ -55,6 +56,7 @@ void PurePursuit::_insertInEigen(EigWaypoint& eig_vector,int index, std::vector<
 
 }
 
+// Create Eigen Matrix for easier mathematical operations
 void PurePursuit::_constructEigenWaypoints(){
 
     int num_waypoints = waypoints.size();
@@ -85,13 +87,14 @@ Eigen::MatrixXd PurePursuit::_transformWaypoints(const EigWaypoint& waypoints, c
 double PurePursuit::_computeLookAheadDist(Eigen::Vector3d& current_pose,double estimated_look_ahead,Eigen::VectorXd& look_ahead_point){
     Eigen::MatrixXd transformed_wp = _transformWaypoints(eig_waypoints, current_pose);
     int num_rows = transformed_wp.rows();
-    // find the indices from the previous closest indices to the next 100 
+    // find the indices from the previous closest indices to the next 50
     int curr_idx = this->current_closest_idx;
-    Eigen::VectorXi indices = Eigen::VectorXi::LinSpaced(30, 0,29)
+    Eigen::VectorXi indices = Eigen::VectorXi::LinSpaced(50, 0,49)
                                 .unaryExpr([num_rows, curr_idx](int x) { 
                                     return (x + curr_idx) % num_rows; 
                                 });
-    // find the euclid dist from the the car to all the transformed waypoints
+    
+    // find the euclid dist from the the car to all the next 50 transformed waypoints
     Eigen::VectorXd distances = transformed_wp(indices, Eigen::all).rowwise().norm();
     Eigen::Index min_index;
     // find the closest point and the corresponding index, to warm start the searching for the next iteration
@@ -100,7 +103,7 @@ double PurePursuit::_computeLookAheadDist(Eigen::Vector3d& current_pose,double e
     //find the the lookahead point from the this->current_closest_idx
     Eigen::VectorXd diff_distance = (distances.array() - estimated_look_ahead).abs();
     double min_distance_to_actual_lookhead = diff_distance.minCoeff(&min_index);
-    double look_ahead_dist = diff_distance(min_index);
+    double look_ahead_dist = diff_distance(min_index); // found the waypoint which has the minimum distance to the estimated estimated_look_ahead dist
     look_ahead_point = transformed_wp.row(indices(min_index));;
     return look_ahead_dist;
 
@@ -112,17 +115,15 @@ double PurePursuit::_computeLookAheadDist(Eigen::Vector3d& current_pose,double e
 
 //ref :https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/PurePursuit.html
 ControlVector PurePursuit::computeControl(const StateVector& st, const ControlVector& prev_control){
-    //std::cout<<"in compute control";
-    ControlVector ctrl(2);
+    ControlVector ctrl(num_control);
     Eigen::Vector3d current_position;
     current_position<<st(0),st(1),st(index_yaw);
     auto v_x = st(index_speed);
-    
     double lookahead = std::min(std::max(min_lookahead, max_lookahead * v_x / lookahead_ratio), max_lookahead);
     Eigen::VectorXd look_ahead_point;
     double look_ahead_dist = _computeLookAheadDist( current_position, lookahead, look_ahead_point);
     double alpha = atan2(look_ahead_point(1),look_ahead_point(0));
-    ctrl(0) =  K_p*atan(2*(lf+lr)*sin(alpha)/(look_ahead_dist));
-    ctrl(1) = 0.9;
+    ctrl(0) =  K_p*atan(2*(lf+lr)*sin(alpha)/(look_ahead_dist)); // reference steering
+    ctrl(1) = ref_speed; // reference speed
     return  ctrl;
 }
