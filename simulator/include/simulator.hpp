@@ -27,4 +27,5 @@ class Simulator {
         Simulator(int&, int&, std::string& );
         void run(const double&, const double&);
         void run(const double&, const double&,const double&);
+        bool isOpen() const;
 };

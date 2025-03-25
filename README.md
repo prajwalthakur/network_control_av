@@ -18,7 +18,7 @@ flowchart TB
 https://github.com/user-attachments/assets/31855e9c-6aaa-4744-acb6-ca8be0d7e39e
 
 
-## Motion Model reference
+## Motion Model Reference
 1. https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/-/blob/master/vehicleModels_commonRoad.pdf
 2. https://github.com/f1tenth/f1tenth_gym
 

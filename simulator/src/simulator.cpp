@@ -141,3 +141,8 @@ void Simulator::run(const double& car_x,const double& car_y, const double& yaw)
         window.display();    
     
     }
+
+
+bool Simulator::isOpen() const {
+    return window.isOpen();
+}
