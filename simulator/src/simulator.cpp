@@ -33,7 +33,7 @@ Simulator::Simulator(int& width,int& height, string& file_name ):window(sf::Vide
         waypointTexture.draw(waypoint);
     }
     
-    //sprite in SFML is just a drawable object that holds a texture
+    //sprite in SFML is  a drawable object that holds a texture
     //sprite is lighter and faster to draw than individual shapes
     //setTexture() binds this texture to the sprite, so the sprite will now display the texture
     waypointTexture.display();
