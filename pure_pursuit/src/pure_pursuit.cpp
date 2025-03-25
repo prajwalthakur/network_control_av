@@ -110,6 +110,7 @@ double PurePursuit::_computeLookAheadDist(Eigen::Vector3d& current_pose,double e
 
 //ref :https://thomasfermi.github.io/Algorithms-for-Automated-Driving/Control/PurePursuit.html
 ControlVector PurePursuit::computeControl(const StateVector& st, const ControlVector& prev_control){
+    //std::cout<<"in compute control";
     ControlVector ctrl(2);
     Eigen::Vector3d current_position;
     current_position<<st(0),st(1),st(index_yaw);
@@ -121,5 +122,6 @@ ControlVector PurePursuit::computeControl(const StateVector& st, const ControlVe
     double alpha = atan2(look_ahead_point(1),look_ahead_point(0));
     ctrl(0) =  atan(2*(lf+lr)*sin(alpha)/(look_ahead_dist));
     ctrl(1) = 1.1;
+    //std::cout<< " control computed at  time okk"<<std::endl;
     return  ctrl;
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <robot_base.hpp>
 #include <vector>
 #include <fstream>

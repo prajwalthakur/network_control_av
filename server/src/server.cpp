@@ -17,14 +17,13 @@ TCPServer::TCPServer(int port,std::string& file_name):port(port),acceptor(io_ser
 
             // robot = RobotFactory::createRobot(robot_name);
             // ctrl_dt = 0.01;
-            initial_st.resize(7);
+            current_robot_state.resize(7);
             current_control.resize(2); 
-            initial_st << 15.933784860951967, -4.176775967937121, 0.0, 0.0, -M_PI_2, 0.0, 0.0;
+            current_robot_state << 15.933784860951967, -4.176775967937121, 0.0, 0.0, -M_PI_2, 0.0, 0.0;
             current_control << -3.0, 2.0;  
-            Controller = std::make_shared<PurePursuit>(file_name,initial_st);
+            Controller = std::make_shared<PurePursuit>(file_name,current_robot_state);
             control_dt = 0.05;
-            current_control = Controller->computeControl(initial_st,current_control);
-            // robot->initialize(ctrl_dt,initial_st); 
+            std::cout<<" server initialized"<<std::endl; 
 
         }
 
@@ -58,7 +57,7 @@ void TCPServer::acceptConnection(){
         });
 }
 
-// Send Eigen::VectorXd over socket
+// // Send Eigen::VectorXd over socket
 void TCPServer::sendControl(const Eigen::VectorXd& control_vector){
     std::shared_ptr<std::vector<double>> buffer;
     {    
@@ -82,7 +81,31 @@ void TCPServer::sendControl(const Eigen::VectorXd& control_vector){
             }
         );
 }
+// Send Eigen::VectorXd over socket
+// void TCPServer::sendControl(const Eigen::VectorXd& control_vector){
+//     std::ostringstream oss;
+//     std::shared_ptr<std::string> buffer;
+    
+//     {
+//         std::lock_guard<std::mutex> lock(state_control_mutex);
 
+//         // Convert to string
+//         oss << control_vector(0) << " " << control_vector(1) << "\n";
+
+//         // Store the string in a shared_ptr
+//         buffer = std::make_shared<std::string>(oss.str());
+//     }
+
+//     // Send the buffer using boost::asio
+//     boost::asio::async_write(socket, boost::asio::buffer(*buffer),
+//         [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred) {
+//             if (!error) {
+//                 std::cout << "Sent control vector to client: " << *buffer;
+//             } else {
+//                 std::cerr << "Send failed: " << error.message() << std::endl;
+//             }
+//         });
+// }
 
 // read Eigen::VectorXd over socket
 void TCPServer::readState()
