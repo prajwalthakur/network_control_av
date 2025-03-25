@@ -13,10 +13,9 @@ fi
 # Build with verbose output
 cmake --build . -- -j$(nproc) VERBOSE=1
 
-# Run the executable if build succeeds
+# if build succeeds
 if [ $? -eq 0 ]; then
-    echo "Build succeeded. Running the executable..."
-    ./network_control_av
+    echo "Build succeeded."
 else
     echo "Build failed!"
 fi

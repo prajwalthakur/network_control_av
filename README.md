@@ -38,4 +38,6 @@ Implemented motion model are based on the single track model (bicycle model), mo
 ## Steps to execute
 ```
 ./build.sh
+cd build
+./network_control_av
 ```
